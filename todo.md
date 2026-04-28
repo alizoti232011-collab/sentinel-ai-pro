@@ -77,3 +77,15 @@
 - [ ] Additional pattern types
 - [ ] Mobile app integration
 - [ ] HealthKit/Health Connect integration
+
+
+## Phase 2 - Phone Integration (NEW)
+- [x] Set up Apple HealthKit integration
+- [x] Set up Google Fit integration
+- [x] Create phone sync UI component
+- [x] Map Apple Health data to behavioral metrics
+- [x] Map Google Fit data to behavioral metrics
+- [ ] Build OAuth flow for health app permissions
+- [ ] Add sync history and last sync timestamp
+- [ ] Handle sync errors and retry logic
+- [ ] Test with real iPhone and Android devices

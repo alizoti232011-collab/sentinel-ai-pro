@@ -234,6 +234,108 @@ export const appRouter = router({
       return { totalUsers: 0, activeUsers: 0, interventionRate: 0 };
     }),
   }),
+
+  phoneSync: router({
+    syncAppleHealth: protectedProcedure
+      .input(
+        z.object({
+          sleepHours: z.number().optional(),
+          distanceKm: z.number().optional(),
+          activeEnergyBurned: z.number().optional(),
+          heartRate: z.number().optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const { mapHealthKitData, mergeBehavioralData, validateSyncedData } = await import("./phoneSync");
+        const syncedData = mapHealthKitData(input);
+
+        if (!validateSyncedData(syncedData)) {
+          throw new Error("Invalid synced data");
+        }
+
+        return { success: true, syncedData };
+      }),
+
+    syncGoogleFit: protectedProcedure
+      .input(
+        z.object({
+          sleepMinutes: z.number().optional(),
+          distanceMeters: z.number().optional(),
+          caloriesBurned: z.number().optional(),
+          heartRate: z.number().optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const { mapGoogleFitData, validateSyncedData } = await import("./phoneSync");
+        const syncedData = mapGoogleFitData(input);
+
+        if (!validateSyncedData(syncedData)) {
+          throw new Error("Invalid synced data");
+        }
+
+        return { success: true, syncedData };
+      }),
+
+    logWithSync: protectedProcedure
+      .input(
+        z.object({
+          manualData: z.object({
+            sleepHours: z.number().optional(),
+            screenTimeHours: z.number().optional(),
+            moodScore: z.number().optional(),
+            energyLevel: z.number().optional(),
+            activityKm: z.number().optional(),
+            cancelledPlans: z.number().optional(),
+          }),
+          syncedData: z.object({
+            sleepHours: z.number().optional(),
+            screenTimeHours: z.number().optional(),
+            moodScore: z.number().optional(),
+            energyLevel: z.number().optional(),
+            activityKm: z.number().optional(),
+            cancelledPlans: z.number().optional(),
+          }).optional(),
+          logDate: z.date().optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const { mergeBehavioralData, validateSyncedData } = await import("./phoneSync");
+        const mergedData = mergeBehavioralData(input.manualData, input.syncedData || {});
+
+        if (!validateSyncedData(mergedData)) {
+          throw new Error("Invalid merged data");
+        }
+
+        const logDate = input.logDate || new Date();
+
+        await createBehavioralLog(ctx.user.id, {
+          sleepHours: mergedData.sleepHours,
+          screenTimeHours: mergedData.screenTimeHours,
+          moodScore: mergedData.moodScore,
+          energyLevel: mergedData.energyLevel,
+          activityKm: mergedData.activityKm,
+          cancelledPlans: mergedData.cancelledPlans,
+          logDate,
+        });
+
+        const { patterns, riskScore } = await detectPatterns(ctx.user.id, mergedData);
+
+        let intervention = null;
+        if (riskScore >= 40 && patterns.length >= 2) {
+          const message = await generateInterventionMessage(ctx.user.id, patterns, mergedData);
+
+          await createIntervention(ctx.user.id, {
+            message,
+            detectedPatterns: patterns,
+            riskScore,
+          });
+
+          intervention = { message, riskScore, patterns };
+        }
+
+        return { success: true, patterns, riskScore, intervention, mergedData };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

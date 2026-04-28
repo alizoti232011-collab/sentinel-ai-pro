@@ -8,10 +8,12 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { trpc } from "@/lib/trpc";
 import { useState } from "react";
 import { toast } from "sonner";
-import { AlertCircle, TrendingDown, Heart, Zap, Activity, Users } from "lucide-react";
+import { useLocation } from "wouter";
+import { AlertCircle, TrendingDown, Heart, Zap, Activity, Users, Smartphone } from "lucide-react";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
+  const [, setLocation] = useLocation();
   const [sleepHours, setSleepHours] = useState(7);
   const [screenTimeHours, setScreenTimeHours] = useState(4);
   const [moodScore, setMoodScore] = useState(7);
@@ -192,13 +194,21 @@ export default function Dashboard() {
                   />
                 </div>
 
-                <Button
-                  onClick={handleLogData}
-                  disabled={isSubmitting}
-                  className="w-full"
-                >
-                  {isSubmitting ? "Logging..." : "Log Today's Data"}
-                </Button>
+              <Button
+                onClick={handleLogData}
+                disabled={isSubmitting}
+                className="w-full mb-2"
+              >
+                {isSubmitting ? "Logging..." : "Log Today's Data"}
+              </Button>
+              <Button
+                onClick={() => setLocation("/phone-sync")}
+                variant="outline"
+                className="w-full gap-2"
+              >
+                <Smartphone className="w-4 h-4" />
+                Sync Phone Data
+              </Button>
               </div>
             </Card>
           </div>
