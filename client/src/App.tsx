@@ -13,6 +13,8 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Security from "./pages/Security";
 import About from "./pages/About";
+import Journal from "./pages/Journal";
+import Features from "./pages/Features";
 
 function Router() {
   return (
@@ -25,6 +27,8 @@ function Router() {
       <Route path={"/terms"} component={Terms} />
       <Route path={"/security"} component={Security} />
       <Route path={"/about"} component={About} />
+      <Route path={"/journal"} component={Journal} />
+      <Route path={"/features"} component={Features} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

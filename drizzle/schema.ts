@@ -200,3 +200,203 @@ export const adminMetrics = mysqlTable("admin_metrics", {
 
 export type AdminMetric = typeof adminMetrics.$inferSelect;
 export type InsertAdminMetric = typeof adminMetrics.$inferInsert;
+
+
+/**
+ * Journal entries - stores user journal entries with AI analysis
+ */
+export const journalEntries = mysqlTable("journal_entries", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  
+  // Entry content
+  title: varchar("title", { length: 255 }),
+  content: text("content").notNull(),
+  
+  // Emotion/mood tagging
+  emotionTags: json("emotionTags"), // JSON array of emotions
+  moodScore: int("moodScore"), // 1-10 if provided
+  
+  // AI analysis
+  sentiment: mysqlEnum("sentiment", ["very_negative", "negative", "neutral", "positive", "very_positive"]),
+  keyThemes: json("keyThemes"), // JSON array of extracted themes
+  aiReflection: text("aiReflection"), // AI-generated response
+  
+  // Privacy
+  isPrivate: boolean("isPrivate").default(true).notNull(),
+  isShareableWithTherapist: boolean("isShareableWithTherapist").default(false).notNull(),
+  
+  // Timestamps
+  entryDate: timestamp("entryDate").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type JournalEntry = typeof journalEntries.$inferSelect;
+export type InsertJournalEntry = typeof journalEntries.$inferInsert;
+
+/**
+ * Intervention effectiveness tracking
+ */
+export const interventionEffectiveness = mysqlTable("intervention_effectiveness", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  interventionId: int("interventionId").notNull(),
+  
+  // Effectiveness metrics
+  moodBefore: int("moodBefore"), // 1-10
+  moodAfter: int("moodAfter"), // 1-10 (measured 24h later)
+  userReachedOut: boolean("userReachedOut").default(false),
+  userExercised: boolean("userExercised").default(false),
+  userJournaled: boolean("userJournaled").default(false),
+  
+  // User rating
+  effectiveness: int("effectiveness"), // 1-5 rating
+  feedback: text("feedback"),
+  
+  // Timestamps
+  measuredAt: timestamp("measuredAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type InterventionEffectiveness = typeof interventionEffectiveness.$inferSelect;
+export type InsertInterventionEffectiveness = typeof interventionEffectiveness.$inferInsert;
+
+/**
+ * Accountability buddy matching
+ */
+export const buddyMatches = mysqlTable("buddy_matches", {
+  id: int("id").autoincrement().primaryKey(),
+  userId1: int("userId1").notNull(),
+  userId2: int("userId2").notNull(),
+  
+  // Match metadata
+  matchedAt: timestamp("matchedAt").defaultNow().notNull(),
+  status: mysqlEnum("status", ["active", "paused", "ended"]).default("active").notNull(),
+  
+  // Timestamps
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type BuddyMatch = typeof buddyMatches.$inferSelect;
+export type InsertBuddyMatch = typeof buddyMatches.$inferInsert;
+
+/**
+ * Silence periods - when users don't want interventions
+ */
+export const silencePeriods = mysqlTable("silence_periods", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  
+  // Period details
+  reason: varchar("reason", { length: 255 }),
+  startDate: timestamp("startDate").notNull(),
+  endDate: timestamp("endDate").notNull(),
+  
+  // Monitoring (silent but still tracking)
+  stillMonitoring: boolean("stillMonitoring").default(true).notNull(),
+  
+  // Timestamps
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type SilencePeriod = typeof silencePeriods.$inferSelect;
+export type InsertSilencePeriod = typeof silencePeriods.$inferInsert;
+
+/**
+ * Behavioral debt tracking
+ */
+export const behavioralDebt = mysqlTable("behavioral_debt", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  
+  // Debt metrics
+  skippedExerciseDays: int("skippedExerciseDays").default(0).notNull(),
+  cancelledPlansCount: int("cancelledPlansCount").default(0).notNull(),
+  isolationDays: int("isolationDays").default(0).notNull(),
+  
+  // Payback
+  exerciseDaysCompleted: int("exerciseDaysCompleted").default(0).notNull(),
+  plansHonored: int("plansHonored").default(0).notNull(),
+  socialEngagements: int("socialEngagements").default(0).notNull(),
+  
+  // Timestamps
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type BehavioralDebt = typeof behavioralDebt.$inferSelect;
+export type InsertBehavioralDebt = typeof behavioralDebt.$inferInsert;
+
+/**
+ * Mood anchors - voice memos for tough times
+ */
+export const moodAnchors = mysqlTable("mood_anchors", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  
+  // Audio content
+  audioUrl: text("audioUrl").notNull(), // URL to stored audio file
+  transcription: text("transcription"),
+  
+  // Metadata
+  recordedWhen: varchar("recordedWhen", { length: 255 }), // e.g., "happy", "grateful", "hopeful"
+  duration: int("duration"), // seconds
+  
+  // Timestamps
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type MoodAnchor = typeof moodAnchors.$inferSelect;
+export type InsertMoodAnchor = typeof moodAnchors.$inferInsert;
+
+/**
+ * Pattern history for replay feature
+ */
+export const patternHistory = mysqlTable("pattern_history", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  
+  // Pattern snapshot
+  snapshotDate: timestamp("snapshotDate").notNull(),
+  
+  // Metrics at that time
+  avgMood: decimal("avgMood", { precision: 5, scale: 2 }),
+  avgSleep: decimal("avgSleep", { precision: 5, scale: 2 }),
+  avgScreenTime: decimal("avgScreenTime", { precision: 5, scale: 2 }),
+  avgActivity: decimal("avgActivity", { precision: 5, scale: 2 }),
+  
+  // Detected patterns
+  activePatterns: json("activePatterns"), // JSON array
+  wellnessScore: decimal("wellnessScore", { precision: 5, scale: 2 }),
+  
+  // Timestamps
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type PatternHistory = typeof patternHistory.$inferSelect;
+export type InsertPatternHistory = typeof patternHistory.$inferInsert;
+
+/**
+ * Reverse interventions - when user is doing well and can help others
+ */
+export const reverseInterventions = mysqlTable("reverse_interventions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  
+  // Suggestion
+  suggestion: text("suggestion").notNull(), // "You're doing well, consider helping..."
+  helpType: varchar("helpType", { length: 255 }), // e.g., "listen_to_friend", "volunteer", "mentor"
+  
+  // User response
+  userResponse: mysqlEnum("userResponse", ["accepted", "dismissed", "ignored"]).default("ignored"),
+  respondedAt: timestamp("respondedAt"),
+  
+  // Timestamps
+  triggeredAt: timestamp("triggeredAt").defaultNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ReverseIntervention = typeof reverseInterventions.$inferSelect;
+export type InsertReverseIntervention = typeof reverseInterventions.$inferInsert;

@@ -16,6 +16,7 @@ import {
   updateInterventionHistory,
 } from "./db";
 import { invokeLLM } from "./_core/llm";
+import { journalRouter } from "./journalRouter";
 
 const detectPatterns = async (userId: number, log: any) => {
   const patterns = [];
@@ -234,6 +235,8 @@ export const appRouter = router({
       return { totalUsers: 0, activeUsers: 0, interventionRate: 0 };
     }),
   }),
+
+  journal: journalRouter,
 
   phoneSync: router({
     syncAppleHealth: protectedProcedure

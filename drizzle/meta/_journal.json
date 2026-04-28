@@ -15,6 +15,13 @@
       "when": 1777383083749,
       "tag": "0001_large_rage",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1777384928696,
+      "tag": "0002_spicy_lorna_dane",
+      "breakpoints": true
     }
   ]
 }

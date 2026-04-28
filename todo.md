@@ -126,3 +126,37 @@
 - [x] Footer with links and copyright
 - [ ] Cookie consent banner (Phase 4)
 - [ ] Data retention policy (Phase 4)
+
+
+## Phase 4 - Unique Differentiator Features (IN PROGRESS)
+
+### Journal Feature
+- [ ] Create journal table in database
+- [ ] Build journal entry form with rich text editor
+- [ ] Implement mood/emotion tagging system
+- [ ] Add AI sentiment analysis for entries
+- [ ] Create pattern extraction from journal entries
+- [ ] Build journal entry list/history view
+- [ ] Implement private vs shareable entries
+- [ ] Add guided journaling prompts
+- [ ] Create AI response/reflection system
+- [ ] Build journal export for therapist
+
+### 8 Unique Features
+- [ ] Reverse Intervention (help others when doing well)
+- [ ] Pattern Replay (visual past vs present comparison)
+- [ ] Intervention Effectiveness Score (learn what works for you)
+- [ ] Accountability Buddy Matching (anonymous peer support)
+- [ ] The Silence Feature (respect autonomy during crisis)
+- [ ] Behavioral Debt Tracker (gamified accountability)
+- [ ] AI Therapist Notes Export (bridge to real therapy)
+- [ ] Mood Anchor System (voice memos for tough times)
+
+### UI Pages
+- [ ] Journal page with entry list and editor
+- [ ] Pattern Replay visualization page
+- [ ] Intervention Effectiveness dashboard
+- [ ] Buddy matching page
+- [ ] Behavioral debt tracker page
+- [ ] Mood anchor voice recorder page
+- [ ] Therapist notes export page
