@@ -9,7 +9,7 @@ import { trpc } from "@/lib/trpc";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
-import { AlertCircle, TrendingDown, Heart, Zap, Activity, Users, Smartphone } from "lucide-react";
+import { AlertCircle, TrendingDown, Heart, Zap, Activity, Users, Smartphone, Download } from "lucide-react";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -77,6 +77,78 @@ export default function Dashboard() {
   const stats = statsQuery.data;
   const recentLogs = stats?.recentLogs || [];
 
+  const generateAndDownloadPDF = () => {
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>Sentinel AI Health Report</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #1f2937; line-height: 1.6; margin: 0; padding: 20px; background: #f9fafb; }
+          .container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+          .header { border-bottom: 2px solid #3b82f6; padding-bottom: 20px; margin-bottom: 30px; }
+          .header h1 { margin: 0; color: #1e40af; font-size: 28px; }
+          .metrics-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin: 20px 0; }
+          .metric-card { padding: 15px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; text-align: center; }
+          .metric-label { color: #6b7280; font-size: 12px; font-weight: 600; text-transform: uppercase; }
+          .metric-value { color: #1f2937; font-size: 24px; font-weight: 700; margin: 8px 0; }
+          .disclaimer { background: #fef3c7; border: 1px solid #fcd34d; padding: 15px; border-radius: 6px; font-size: 12px; color: #92400e; margin-top: 20px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>Sentinel AI Health Report</h1>
+            <p>Personal Wellbeing & Behavioral Analysis</p>
+            <p style="color: #6b7280; font-size: 14px; margin: 10px 0 0 0;">Generated: ${new Date().toLocaleString()}</p>
+          </div>
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-label">Sleep</div>
+              <div class="metric-value">${sleepHours.toFixed(1)} hrs</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Screen Time</div>
+              <div class="metric-value">${screenTimeHours.toFixed(1)} hrs</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Mood</div>
+              <div class="metric-value">${moodScore}/10</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Energy</div>
+              <div class="metric-value">${energyLevel}/10</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Activity</div>
+              <div class="metric-value">${activityKm.toFixed(1)} km</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Wellness Score</div>
+              <div class="metric-value">${typeof stats?.wellnessScore === 'number' ? stats.wellnessScore.toFixed(1) : '0.0'}/100</div>
+            </div>
+          </div>
+          <div class="disclaimer">
+            <strong>Medical Disclaimer:</strong> This report is for informational purposes only and should not be considered medical advice. Please consult with a qualified healthcare provider.
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+    
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `sentinel-ai-report-${new Date().toISOString().split('T')[0]}.html`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    toast.success('Report downloaded successfully!');
+  };
+
   const chartData = recentLogs
     .slice()
     .reverse()
@@ -103,6 +175,17 @@ export default function Dashboard() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-slate-900">Your Wellbeing Dashboard</h2>
+          <Button
+            onClick={generateAndDownloadPDF}
+            className="flex items-center gap-2"
+          >
+            <Download className="w-4 h-4" />
+            Export Report
+          </Button>
+        </div>
+
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Logging Form */}
           <div className="lg:col-span-1">
