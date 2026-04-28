@@ -22,6 +22,13 @@
       "when": 1777384928696,
       "tag": "0002_spicy_lorna_dane",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1777407798564,
+      "tag": "0003_long_molecule_man",
+      "breakpoints": true
     }
   ]
 }
