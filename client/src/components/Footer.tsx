@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Heart } from "lucide-react";
+import { Heart, Brain } from "lucide-react";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -117,6 +117,3 @@ export default function Footer() {
     </footer>
   );
 }
-
-// Fix: Add missing import
-import { Brain } from "lucide-react";

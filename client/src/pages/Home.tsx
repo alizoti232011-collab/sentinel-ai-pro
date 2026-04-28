@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { ArrowRight, Brain, Heart, TrendingUp, AlertCircle, MessageCircle, BarChart3 } from "lucide-react";
 import { getLoginUrl } from "@/const";
 import { useLocation } from "wouter";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
@@ -189,6 +190,7 @@ export default function Home() {
           </div>
         </div>
       </footer>
+      <Footer />
     </div>
   );
 }
