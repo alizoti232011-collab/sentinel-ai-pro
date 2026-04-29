@@ -4,7 +4,7 @@
  */
 
 const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
-const MODEL = 'llama2';
+const MODEL = 'tinyllama'; // Using TinyLlama for efficiency (works with 3.8GB RAM)
 
 /**
  * Generate intervention message using Ollama
